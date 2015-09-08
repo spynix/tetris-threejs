@@ -1,0 +1,22 @@
+@charset "utf-8";
+
+* {
+  font-family: Tahoma, sans-serif;
+}
+
+body {
+  background-color: #505060;
+}
+
+canvas {
+  display: block;
+  width: 640px;
+  height: 600px;
+  padding: 0;
+  margin: 16px auto;
+}
+
+
+.main {
+  
+}
