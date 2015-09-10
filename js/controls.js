@@ -33,3 +33,10 @@
 "use strict";
 
 var tetris = tetris || {};
+
+
+tetris.init_dev_binds = function() {
+  $("#rotate_world").on("click", function() {
+    tetris.rotate_world();
+  });
+};

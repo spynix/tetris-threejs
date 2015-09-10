@@ -33,3 +33,35 @@
 "use strict";
 
 var tetris = tetris || {};
+tetris.json_loader = new THREE.JSONLoader();
+
+
+tetris.init = function() {
+  tetris.rng = new MersenneTwister();
+  tetris.renderer = new THREE.WebGLRenderer();
+  tetris.camera = new THREE.PerspectiveCamera(90, 800 / 800, 0.1, 1000);
+  tetris.stats = new Stats();
+
+  tetris.renderer.setClearColor(0x505060, 1);
+  tetris.renderer.setSize(800, 800);
+  tetris.renderer.autoClear = false;
+  
+  document.getElementById("main").appendChild(tetris.renderer.domElement);
+  document.body.appendChild(tetris.stats.domElement);
+  
+  tetris.build_world();
+  tetris.build_board();
+  tetris.render();
+  
+  tetris.init_dev_binds();
+};
+
+
+tetris.load_assets = function() {
+  tetris.load_graphics();
+};
+
+
+$(document).ready(function() {
+  tetris.load_assets();
+});
