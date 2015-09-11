@@ -39,4 +39,108 @@ tetris.init_dev_binds = function() {
   $("#rotate_world").on("click", function() {
     tetris.rotate_world();
   });
+  
+  $("#spawn_tetrimino").on("click", function() {
+    tetris.spawn_tetrimino();
+  });
+  
+  $("#global_intensity").val(tetris.config.graphics.multipliers.global_intensity);
+  
+  $("#global_intensity").on("keydown", function(event) {
+    if (event.which == 13)
+      tetris.config.graphics.multipliers.global_intensity = parseInt(this.value, 10);
+  });
+  
+  $("#red_intensity").val(tetris.config.graphics.multipliers.red_intensity);
+  
+  $("#red_intensity").on("keydown", function(event) {
+    if (event.which == 13)
+      tetris.config.graphics.multipliers.red_intensity = parseInt(this.value, 10);
+  });
+};
+
+
+tetris.init_keyboard_binds = function() {
+  tetris.controls = new KeyAssist([
+    {
+      label: "pausebreak",
+      code: 19,
+      active: true,
+      down: null,
+      during: null,
+      up: null
+    }, {
+      label: "space",
+      code: 32,
+      active: true,
+      down: null,
+      during: null,
+      up: null
+    }, {
+      label: "left",
+      code: 37,
+      active: true,
+      down: null,
+      during: null,
+      up: null
+    }, {
+      label: "up",
+      code: 38,
+      active: true,
+      down: tetris.rotate_tetrimino,
+      during: null,
+      up: null
+    }, {
+      label: "right",
+      code: 39,
+      active: true,
+      down: null,
+      during: null,
+      up: null
+    }, {
+      label: "down",
+      code: 40,
+      active: true,
+      down: null,
+      during: null,
+      up: null
+    }, {
+      label: "w",
+      code: 87,
+      active: true,
+      down: null,
+      during: null,
+      up: null
+    }, {
+      label: "s",
+      code: 83,
+      active: true,
+      down: null,
+      during: null,
+      up: null
+    }, {
+      label: "a",
+      code: 65,
+      active: true,
+      down: null,
+      during: null,
+      up: null
+    }, {
+      label: "d",
+      code: 68,
+      active: true,
+      down: null,
+      during: null,
+      up: null
+    }, {
+      label: "n",
+      code: 78,
+      active: true,
+      down: null,
+      during: null,
+      up: null
+    }
+  ], {
+    debug: true
+  });
 };
