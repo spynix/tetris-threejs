@@ -33,3 +33,72 @@ canvas {
   top: 0;
   left: 0;
 }
+
+
+.options {
+  width: 800px;
+  margin: 16px auto;
+  padding: 0;
+}
+
+
+.options .row {
+  font-family: Tahoma, sans-serif;
+  margin: 4px;
+}
+
+
+.options .row:after {
+  content: " ";
+  display: block;
+  visibility: hidden;
+  clear: both;
+  font-size: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  line-height: 0;
+  height: 0;
+}
+
+
+.options .row .group {
+  display: block;
+  float: left;
+  border: 1px solid #202020;
+  padding: 8px;
+  margin: 4px;
+}
+
+
+.options .row .group:last-child:after {
+  content: " ";
+  display: block;
+  visibility: hidden;
+  clear: both;
+  font-size: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  line-height: 0;
+  height: 0;
+}
+
+
+.options .row .group .option {
+  padding-left: 16px;
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+
+
+.option-name {
+  display: inline-block;
+  width: 64px;
+}
+
+
+.scalar {
+  text-align: center;
+  width: 48px;
+}
