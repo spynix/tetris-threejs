@@ -63,5 +63,9 @@ tetris.load_assets = function() {
 
 
 $(document).ready(function() {
+  /* init_dev_binds() inuuuuuujklll init() depends on DOM element ids to reference
+   * so web_ui() should come first
+   */
+  tetris.web_ui();
   tetris.load_assets();
 });
