@@ -40,6 +40,12 @@ tetris.debug.audio = tetris.debug.audio || false;
 tetris.debug.graphics = tetris.debug.graphics || false;
 tetris.debug.controls = tetris.debug.controls || false;
 
+tetris.config = tetris.config || {};
+tetris.config.graphics = tetris.config.graphics || {};
+tetris.config.graphics.multipliers = tetris.config.graphics.multipliers || {};
+tetris.config.graphics.multipliers.global_intensity = 1;
+tetris.config.graphics.multipliers.red_intensity = 1;
+
 tetris.manifests = tetris.manifests || {};
 
 tetris.graphics = tetris.graphics || {};
@@ -201,7 +207,7 @@ var tetriminos = Object.freeze([
     name: "z",
     type: 6,
     size: 3,
-    matrix: [
+    matrices: [
       [
         0, 1, 0,
         1, 1, 0,

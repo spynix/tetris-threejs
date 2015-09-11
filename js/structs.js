@@ -37,10 +37,11 @@ function Tetrimino(config, parent) {
   var i, j, block;
   
   this.type = config.type;
-  this.matrix_size = config.size;
-  this.matrix = new Matrix2d(this.matrix_size, this.matrix_size, false);
+  this.matrix = new Matrix2d(config.size, config.size, false);
+  this.group = new THREE.Group();
   this.row = 0;
   this.column = 0;
+  this.rotation = 0;
   this.visible = false;
   this.blocks = [];
   
@@ -49,25 +50,22 @@ function Tetrimino(config, parent) {
   if (parent)
     this.parent = parent;
   else
-    this.parent = tetris.scene;
+    this.parent = tetris.world.group;
   
-  this.group = new THREE.Group();
-  
-  for (i = 0; i < this.matrix_size; i++) {
-    for (j = 0; j < this.matrix_size; j++) {
-      if (this.matrix[i][j] == 1) {
+  for (i = 0; i < this.matrix.num_rows; i++) {
+    for (j = 0; j < this.matrix.num_columns; j++) {
+      if (this.matrix.matrix[(i * this.matrix.num_columns) + j] == 1) {
         block = tetris.graphics.redblock.clone();
         
         block.position.set(j, i, 0);
         
-        this.group.add(block);
         this.blocks.push(block);
       }
     }
   }
   
-//  for (i = 0, l = this.blocks.length; i < l; i++)
-//    this.group.add(this.blocks[i]);
+  for (i = 0, j = this.blocks.length; i < j; i++)
+    this.group.add(this.blocks[i]);
   
   this.parent.add(this.group);
 }
@@ -110,4 +108,18 @@ Tetrimino.prototype.remove = function() {
   this.column = null;
   this.visible = null;
   this.blocks = null;
+};
+
+
+Tetrimino.prototype.set_position = function(x, y, z) {
+  if (x === undefined)
+    x = 0;
+  
+  if (y === undefined)
+    y = 0;
+  
+  if (z === undefined)
+    z = 0;
+  
+  this.group.position.set(x, y, z);
 };
