@@ -79,7 +79,7 @@ tetris.build_world = function() {
   tetris.world.scene = new THREE.Scene();
   tetris.world.light = new THREE.DirectionalLight(0xffffff, 1.0);
   tetris.world.redlight = new THREE.PointLight(0xff6060, 0, 50);
-  tetris.world.trackball = new THREE.TrackballControls(tetris.camera);
+//  tetris.world.trackball = new THREE.TrackballControls(tetris.camera);
   tetris.world.matrix = new Matrix2d(23, 28, true);
   tetris.world.matrix.update(background);
   tetris.world.blocks = [];
@@ -112,7 +112,7 @@ tetris.build_world = function() {
   tetris.world.pivot.add(tetris.world.redlight);
   tetris.world.scene.add(tetris.world.pivot);
   
-  tetris.world.trackball.rotateSpeed = 3.0;
+//  tetris.world.trackball.rotateSpeed = 3.0;
 };
 
 
@@ -121,6 +121,7 @@ tetris.reset_world = function() {
   tetris.world_rotation_delta = 0;
   tetris.world_flipped = false;
   tetris.world.pivot.rotation.set(0, 0, 0);
+  tetris.world.redlight.intensity = 0;
 };
 
 
@@ -128,17 +129,29 @@ tetris.rotate_world = function() {
   tetris.flipping_world = true;
   tetris.world_rotation_delta = 0;
   
-  if (!tetris.flipped)
-    tetris.world.redlight.intensity = 1.0;
+//  if (!tetris.flipped)
+//    tetris.world.redlight.intensity = 1.0;
 };
 
 
 tetris.rotating_world = function() {
+  var gi = tetris.config.graphics.multipliers.global_intensity;
+  var ri = tetris.config.graphics.multipliers.red_intensity;
+  
   if (tetris.flipping_world == false)
     return false;
   
   tetris.world.pivot.rotation.y += 0.03;
   tetris.world_rotation_delta += 0.03;
+  
+  /* 0.00955 is close enough to 0.03 / pi to warrant not performing division here */
+  if (tetris.world_flipped) {
+    tetris.world.redlight.intensity = Math.max(tetris.world.redlight.intensity - (0.00955 * gi * ri), 0);
+    tetris.world.light.intensity = Math.min(tetris.world.light.intensity + (0.00955 * gi), gi);
+  } else {
+    tetris.world.redlight.intensity = Math.min(tetris.world.redlight.intensity + (0.00955 * gi * ri), (gi * ri));
+    tetris.world.light.intensity = Math.max(tetris.world.light.intensity - (0.00955 * gi), 0);
+  }
   
   if (tetris.world_rotation_delta >= Math.PI) {
     tetris.flipping_world = false;
@@ -147,9 +160,12 @@ tetris.rotating_world = function() {
       tetris.world_flipped = false;
       tetris.world.pivot.rotation.y = 0;
       tetris.world.redlight.intensity = 0;
+      tetris.world.light.intensity = gi;
     } else {
       tetris.world_flipped = true;
       tetris.world.pivot.rotation.y = Math.PI;
+      tetris.world.redlight.intensity = gi * ri;
+      tetris.world.light.intensity = 0;
     }
     
     tetris.world_rotation_delta = 0;
@@ -166,19 +182,19 @@ tetris.build_board = function() {
 //  tetris.board.redlight = new THREE.PointLight(0xff6060, 0, 50);
   tetris.board.matrix = new Matrix2d(20, 10, false);
   tetris.board.blocks = [];
-  
-  for (i = 0; i < 20; i++) {
-    for (j = 0; j < 10; j++) {
-      block = tetris.graphics.blueblock.clone();
-      
-      block.position.set(j, i, 0);
-      
-      tetris.board.blocks.push(block);
-    }
-  }
-  
-  for (i = 0, j = tetris.board.blocks.length; i < j; i++)
-    tetris.board.group.add(tetris.board.blocks[i]);
+
+//  for (i = 0; i < 20; i++) {
+//    for (j = 0; j < 10; j++) {
+//      block = tetris.graphics.blueblock.clone();
+//      
+//      block.position.set(j, i, 0);
+//      
+//      tetris.board.blocks.push(block);
+//    }
+//  }
+//  
+//  for (i = 0, j = tetris.board.blocks.length; i < j; i++)
+//    tetris.board.group.add(tetris.board.blocks[i]);
   
   tetris.board.group.position.set(-4.5, -8.5, 0);
   tetris.board.light.position.set(0, 5, 5);
@@ -190,13 +206,24 @@ tetris.build_board = function() {
 };
 
 
+tetris.spawn_tetrimino = function() {
+  var random = tetris.rng.between(0, 6);
+  
+  if (tetris.board.current)
+    tetris.board.current.remove();
+  
+  tetris.board.current = new Tetrimino(tetriminos[random], tetris.board.group);
+  tetris.board.current.set_position(4, 20 - tetris.board.current.matrix.num_rows, 0);
+};
+
+
 tetris.render = function() {
   requestAnimationFrame(tetris.render);
   
   if (tetris.flipping_world)
     tetris.rotating_world();
   
-  tetris.world.trackball.update();
+//  tetris.world.trackball.update();
   tetris.stats.update();
   
   tetris.renderer.clear();
