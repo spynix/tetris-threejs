@@ -36,31 +36,31 @@ var tetris = tetris || {};
 
 
 tetris.move_up = function() {
-  if (tetris.board.current && !tetris.collided && !tetris.halted)
+  if (tetris.board.current && !tetris.collided && !tetris.halted && !tetris.gameover)
     tetris.board.current.move(UP);
 };
 
 
 tetris.move_right = function() {
-  if (tetris.board.current && !tetris.collided && !tetris.halted)
+  if (tetris.board.current && !tetris.collided && !tetris.halted && !tetris.gameover)
     tetris.board.current.move(RIGHT);
 };
 
 
 tetris.move_down = function() {
-  if (tetris.board.current && !tetris.collided && !tetris.halted)
+  if (tetris.board.current && !tetris.collided && !tetris.halted && !tetris.gameover)
     tetris.board.current.move(DOWN);
 };
 
 
 tetris.move_left = function() {
-  if (tetris.board.current && !tetris.collided && !tetris.halted)
+  if (tetris.board.current && !tetris.collided && !tetris.halted && !tetris.gameover)
     tetris.board.current.move(LEFT);
 };
 
 
 tetris.rotate = function() {
-  if (tetris.board.current && !tetris.collided && !tetris.halted)
+  if (tetris.board.current && !tetris.collided && !tetris.halted && !tetris.gameover)
     tetris.board.current.rotate();
 };
 

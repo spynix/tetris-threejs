@@ -138,7 +138,7 @@ Block.prototype.frame_single = (function() {
     
     scale_delta += 0.02;
     
-    if ((scale_delta >= 1) || (this.block.scale.x == 0) || (this.block.scale.y == 0) || (this.block.scale.z == 0)) {
+    if ((scale_delta >= 1) || (this.block.scale.x <= 0) || (this.block.scale.y <= 0) || (this.block.scale.z <= 0)) {
       this.animation = ANIM_NONE;
       this.block.scale.set(0, 0, 0);
       

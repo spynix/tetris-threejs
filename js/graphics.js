@@ -285,6 +285,22 @@ tetris.build_pause = function() {
 };
 
 
+tetris.build_gameover = function() {
+  var center;
+  
+  tetris.game_over.group = new THREE.Group();
+  tetris.game_over.text = tetris.graphics.text3d("Game Over", 2, true);
+  
+  tetris.game_over.text.geometry.computeBoundingBox();
+  center = -0.5 * (tetris.game_over.text.geometry.boundingBox.max.x - tetris.game_over.text.geometry.boundingBox.min.x );
+
+  tetris.game_over.text.position.set(center, -1, 0);
+
+  tetris.game_over.group.add(tetris.game_over.text);
+  tetris.game_over.group.position.set(13.5, -11, 5);
+};
+
+
 tetris.graphics.text3d = function(string, size, bevel) {
   var geometry, material, area;
   var h, i, j, k, l;
@@ -384,6 +400,8 @@ tetris.preview_to_current = function() {
   tetris.board.current = new Tetrimino(tetriminos[tetris.board.preview.type], tetris.board.group);
   tetris.board.current.show();
   tetris.board.current.goto(20 - tetris.board.current.matrix.num_rows, 4);
+  
+  tetris.check_gameover();
 };
 
 
@@ -518,6 +536,13 @@ tetris.redistribute_blocks = function() {
     for (column = 0; column < tetris.board.matrix.num_columns; column++)
       if (tetris.board.blocks[i] && (tetris.board.matrix.matrix[(row * tetris.board.matrix.num_columns) + column] == 1))
         tetris.board.blocks[i++].goto(row, column);
+};
+
+
+tetris.update_scoreboard = function() {
+  $("#current_score").html("Score: " + tetris.stats.score.toString());
+  $("#high_score").html("High: " + tetris.stats.highscore.toString());
+  $("#current_level").html("Level: " + tetris.stats.level.toString());
 };
 
 

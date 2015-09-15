@@ -52,11 +52,19 @@ tetris.init = function() {
   tetris.build_world();
   tetris.build_board();
   tetris.build_pause();
+  tetris.build_gameover();
   tetris.graphics.raf = tetris.render();
   
   tetris.init_dev_binds();
   tetris.init_keyboard_binds();
   tetris.init_options_binds();
+  
+  tetris.stats.score = 0;
+  tetris.stats.highscore = 0;
+  tetris.stats.total_lines_cleared = 0;
+  tetris.stats.last_lines_cleared = 0;
+  tetris.stats.level = 0;
+  tetris.stats.speed = 0;
 };
 
 
@@ -93,6 +101,91 @@ tetris.join_the_party = function() {
   
   tetris.board.current.remove();
   delete tetris.board.current;
+};
+
+
+tetris.check_gameover = function() {
+  var i, j, k, l;
+  var mm, against, offsets, temp;
+  var chunk = [];
+  var gameover = false;
+  
+  mm = new Matrix2d(tetris.board.current.matrix.num_rows, tetris.board.current.matrix.num_columns, tetris.board.current.matrix.debug);
+  mm.update(tetris.board.current.matrix.matrix);
+  
+  offsets = mm.minimize();
+  against = new Matrix2d(mm.num_rows, mm.num_columns, mm.matrix.debug);
+  
+  for (i = (tetris.board.current.offsets.top + offsets.top), j = (i + mm.num_rows); i < j; i++) {
+    for (k = (tetris.board.current.offsets.left + offsets.left), l = (k + mm.num_columns); k < l; k++) {
+      /* this will catch a down violation (y) on the board */
+      temp = tetris.board.matrix.matrix[(i * tetris.board.matrix.num_columns) + k] !== undefined ? tetris.board.matrix.matrix[(i * tetris.board.matrix.num_columns) + k] : 9;
+      
+      /* and this will catch any left and right (x) violations */
+      if ((k >= tetris.board.matrix.num_columns) || (k < 0))
+        temp = 9;
+      
+      chunk.push(temp);
+    }
+  }
+  
+  against.update(chunk);
+  console.log(against.toString());
+  against.add(mm);
+  console.log(against.toString());
+  
+  for (i = 0; i < against.num_rows; i++) {
+    for (j = 0; j < against.num_columns; j++) {
+      if ((against.matrix[(i * against.num_columns) + j] >= 2) || (against.matrix[(i * against.num_columns) + j] === undefined))
+        gameover = true;
+      
+      if (gameover)
+        break;
+    }
+    
+    if (gameover)
+      break;
+  }
+  
+  if (gameover) {
+    tetris.gameover = true;
+    
+    if (tetris.pulse) {
+      clearInterval(tetris.pulse);
+      tetris.pulse = null;
+    }
+    
+    tetris.world.group.add(tetris.game_over.group);
+  }
+  
+  return gameover;
+};
+
+
+tetris.update_score = function(lines) {
+  var bonus = false;
+  
+  if ((lines <= 0) || (lines >= 5))
+    return false;
+  
+  if ((lines == 4) && (tetris.stats.last_lines_cleared == 4))
+    bonus = true;
+  
+  tetris.stats.last_lines_cleared = lines;
+  tetris.stats.total_lines_cleared += lines;
+  
+  tetris.stats.score += points[lines - 1];
+  
+  if (bonus)
+    tetris.stats.score += Math.floor((points[lines - 1] / 2));
+  
+  tetris.stats.level = Math.max(1, Math.floor(tetris.stats.total_lines_cleared / 10));
+  tetris.stats.speed = Math.max(1, 10 - Math.floor(tetris.stats.level / 2));
+  
+  if (tetris.stats.score > tetris.stats.highscore)
+    tetris.stats.highscore = tetris.stats.score;
+  
+  tetris.update_scoreboard();
 };
 
 
@@ -149,7 +242,7 @@ tetris.handle_full_rows = function() {
   if (!tetris.halted)
     tetris.redistribute_blocks();
   
-  // debugger;
+  tetris.update_score(n);
 };
 
 
@@ -184,7 +277,6 @@ tetris.reset_game = function() {
   var i, l;
   
   tetris.stats.score = 0;
-  tetris.stats.highscore = 0;
   tetris.stats.total_lines_cleared = 0;
   tetris.stats.last_lines_cleared = 0;
   tetris.stats.level = 1;
@@ -217,6 +309,12 @@ tetris.reset_game = function() {
   
   if (tetris.paused) {
     tetris.paused = false;
+    tetris.world.group.remove(tetris.pause.group);
+  }
+  
+  if (tetris.gameover) {
+    tetris.gameover = false;
+    tetris.world.group.remove(tetris.game_over.group);
   }
   
   for (i = 0, l = tetris.board.blocks.length; i < l; i++)
@@ -258,6 +356,8 @@ tetris.new_game = function() {
   /* cleared in reset_game(), but just in case... */
   if (!tetris.pulse)
     tetris.pulse = setInterval(tetris.heartbeat, 100);
+  
+  tetris.update_scoreboard();
 };
 
 

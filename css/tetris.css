@@ -20,6 +20,7 @@ canvas {
 
 
 .main {
+  position: relative;
   width: 800px;
   height: 800px;
   padding: 0;
@@ -36,7 +37,7 @@ canvas {
 
 
 .options {
-  width: 800px;
+  width: 768px;
   margin: 16px auto 32px auto;
   padding: 0;
 }
@@ -249,4 +250,23 @@ button.plus {
 
 
 button.reset {
+}
+
+
+.scoreboard {
+  position: absolute;
+  right: 45px;
+  top: 125px;
+  width: 174px;
+  height: 149px;
+  background-color: #e0e0e0;
+  font-family: Tahoma, sans-serif;
+  font-size: 20px;
+  padding: 8px;
+}
+
+
+.current_score {
+  font-weight: bold;
+  font-size: 24px;
 }
