@@ -51,15 +51,267 @@ tetris.init = function() {
   
   tetris.build_world();
   tetris.build_board();
-  tetris.render();
+  tetris.build_pause();
+  tetris.graphics.raf = tetris.render();
   
   tetris.init_dev_binds();
+  tetris.init_keyboard_binds();
+  tetris.init_options_binds();
 };
 
 
 tetris.load_assets = function() {
   tetris.load_graphics();
 };
+
+
+tetris.join_the_party = function() {
+  var block, row, column;
+  var i;
+  
+  /* all tetriminos have 4 blocks, so i iterate the cheap way */
+  for (i = 0; i < 4; i++) {
+    /* assigning the block's parent to tetris.board is not a good way to allow
+     * it to use the internal .goto() method.  in this case its tantamount to
+     * putting on a blindfold and walking into someone elses house and walking
+     * around.  in this situation it just HAPPENS that the house we're walking
+     * into has the expected layout.
+     * 
+     * this is really nasty, and needs to be done differently
+     */
+    block = new Block(tetris.graphics.blueblock.clone(), tetris.board.group, tetris.board);
+    
+    row = 20 - tetris.board.current.matrix.num_rows - tetris.board.current.row + tetris.board.current.blocks[i].row;
+    column = tetris.board.current.column + tetris.board.current.blocks[i].column;
+    
+    block.goto(row, column);
+    block.show();
+    
+    tetris.board.matrix.matrix[(row * tetris.board.matrix.num_columns) + column] = 1;
+    tetris.board.blocks.push(block);
+  }
+  
+  tetris.board.current.remove();
+  delete tetris.board.current;
+};
+
+
+tetris.halt_for_animation = function() {
+  if (tetris.pulse)
+    clearInterval(tetris.pulse);
+  
+  tetris.halted = true;
+};
+
+
+tetris.handle_full_rows = function() {
+  var i, j, k, l, n, row, column, sum, index;
+  var to_remove = [];
+  
+  n = 0;
+  
+  for (row = 0; row < tetris.board.matrix.num_rows; row++) {
+    sum = 0;
+    
+    for (column = 0; column < tetris.board.matrix.num_columns; column++)
+      sum += tetris.board.matrix.matrix[(row * tetris.board.matrix.num_columns) + column];
+    
+    if (sum == 10) {
+      n++;
+      
+      to_remove.push(row);
+    }
+  }
+  
+  if ((n <= 0) || (n >= 5))
+    return n;
+  
+  for (i = tetris.board.blocks.length - 1; i >= 0; i--) {
+    if (to_remove.indexOf(tetris.board.blocks[i].row) != -1) {
+      if (tetris.board.animating.indexOf(tetris.board.blocks[i]) == -1)
+        tetris.board.animating.push(tetris.board.blocks[i]);
+      
+      tetris.board.blocks.splice(i, 1);
+    }
+  }
+  
+  for (i = 0, j = tetris.board.animating.length; i < j; i++)
+    tetris.board.animating[i].animate(1);
+  
+  if (tetris.board.animating.length >= 1)
+    tetris.halt_for_animation();
+  
+  for (i = 0, j = to_remove.length; i < j; i++) {
+    tetris.board.matrix.matrix.splice((to_remove[i] * tetris.board.matrix.num_columns), tetris.board.matrix.num_columns);
+    tetris.board.matrix.matrix.unshift(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+  }
+  
+  if (!tetris.halted)
+    tetris.redistribute_blocks();
+  
+  // debugger;
+};
+
+
+tetris.pause = function() {
+  tetris.paused = !tetris.paused;
+  
+  if (tetris.paused) {
+    tetris.world.group.add(tetris.pause.group);
+    
+    if (tetris.pulse) {
+      clearInterval(tetris.pulse);
+      tetris.pulse = null;
+    }
+    
+    tetris.controls.deactivate(["up", "right", "down", "left"]);
+    
+    tetris.render();
+  } else {
+    tetris.world.group.remove(tetris.pause.group);
+    
+    if (!tetris.pulse)
+      tetris.pulse = setInterval(tetris.heartbeat, 100);
+    
+    tetris.controls.activate(["up", "right", "down", "left"]);
+    
+    tetris.render_interrupt();
+  }
+};
+
+
+tetris.reset_game = function() {
+  var i, l;
+  
+  tetris.stats.score = 0;
+  tetris.stats.highscore = 0;
+  tetris.stats.total_lines_cleared = 0;
+  tetris.stats.last_lines_cleared = 0;
+  tetris.stats.level = 1;
+  tetris.stats.speed = 10;
+  
+  tetris.world.flipping_world = false;
+  tetris.world.rotation_delta = 0;
+  
+  tetris.board.sequence = [];
+  
+  if (tetris.pulse) {
+    clearInterval(tetris.pulse);
+    tetris.pulse = null;
+  }
+  
+  if (tetris.board.current) {
+    tetris.board.current.remove();
+    delete tetris.board.current;
+  }
+
+  if (tetris.board.preview) {
+    tetris.board.preview.remove();
+    delete tetris.board.preview;
+  }
+  
+  if (tetris.world_flipped) {
+    tetris.board.group.rotation.y = 0;
+    tetris.world_flipped = false;
+  }
+  
+  if (tetris.paused) {
+    tetris.paused = false;
+  }
+  
+  for (i = 0, l = tetris.board.blocks.length; i < l; i++)
+    tetris.board.blocks[i].remove();
+  
+  tetris.board.blocks = [];
+  
+  tetris.board.matrix.update(empty_board);
+};
+
+
+tetris.new_game = function() {
+  var random;
+  
+  tetris.reset_game();
+    
+  if (tetris.config.sequencing.sequence_type == 1) {
+    tetris.resequence();
+    
+    tetris.board.current = new Tetrimino(tetriminos[tetris.board.sequence[tetris.board.sequence.length - 1]], tetris.board.group);
+    tetris.board.preview = new Tetrimino(tetriminos[tetris.board.sequence[tetris.board.sequence.length - 2]], tetris.board.group);
+    
+    tetris.board.sequence.splice((tetris.board.sequence.length - 2), 2);
+  } else {
+    random = tetris.rng.between(0, tetriminos.length - 1);
+    tetris.board.current = new Tetrimino(tetriminos[random], tetris.board.group);
+    
+    random = tetris.rng.between(0, tetriminos.length - 1);
+    tetris.board.preview = new Tetrimino(tetriminos[random], tetris.board.group);
+  }
+  
+  /* deletion takes place in reset_game() */
+  tetris.board.current.goto(20 - tetris.board.current.matrix.num_rows, 4);
+  tetris.board.current.show();
+  
+  tetris.board.preview.show();
+  tetris.position_preview();
+
+  /* cleared in reset_game(), but just in case... */
+  if (!tetris.pulse)
+    tetris.pulse = setInterval(tetris.heartbeat, 100);
+};
+
+
+tetris.resequence = function() {
+  var i, j, k;
+  
+  /* reseed the rng with the current time.  this is a lame reseeding solution for the lazy. */
+  tetris.rng.init_genrand((typeof Date.now === "function") ? Date.now() : Date().getTime());
+  
+  /* this probably won't be called without the sequence being empty, but just in case... */
+  tetris.board.sequence = [];
+  
+  for (i = 0; i < tetris.config.sequencing.deck_size; i++)
+    for (j = 0, k = tetriminos.length; j < k; j++)
+      tetris.board.sequence.push(j);
+  
+  /* perform a durstenfeld shuffle */
+  for (i = tetris.board.sequence.length - 1; i > 0; i--) {
+    j = tetris.rng.between(0, i);
+    
+    k = tetris.board.sequence[i];
+    tetris.board.sequence[i] = tetris.board.sequence[j];
+    tetris.board.sequence[j] = k;
+  }
+};
+
+
+tetris.heartbeat = (function() {
+  var interval = 0;
+  var seconds = 0;
+  
+  return function() {
+    interval++;
+    
+    if (interval >= 1000)
+      interval = 0;
+    
+    if (!(interval % 10))
+      seconds++;
+    
+    if (!(interval % tetris.stats.speed)) {
+      tetris.move_down(); /* force the player down 1 */
+    }
+    
+    if (tetris.collided) {
+      tetris.join_the_party();
+      tetris.handle_full_rows(); /* remove any full rows and update score */
+      tetris.preview_to_current();
+      tetris.next_to_preview();
+      
+      tetris.collided = false;
+    }
+  };
+})();
 
 
 $(document).ready(function() {

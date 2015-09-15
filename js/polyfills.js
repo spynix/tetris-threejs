@@ -1,14 +1,7 @@
-/*   File: accordion.css
- * Author: Jin Savage ("spynix")
- *
- *
- * Notes
- * ----------------------------------------------------------------------------
- *
- * Changes have been made from my SUI version to make the result appear as
- * desired.
- *
- * 
+/*    File: polyfills.js, a part of my tetris-threejs project
+ *  Author: Jin Savage ("spynix")
+ *  
+ *  
  * License - 2-clause ("simplified") BSD
  * ----------------------------------------------------------------------------
  * 
@@ -36,50 +29,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
-@charset "utf-8";
-
-
-.accordion {
-  padding: 0;
-}
+"use strict";
 
 
-.accordion .accordion-panel {
-  display: block;
-  margin: 0;
-  width: 100%;
-  font-family: Tahoma, sans-serif;
-}
-
-
-.accordion .accordion-panel .accordion-title {
-  cursor: pointer;
-  display: block;
-  padding: 8px;
-  font-size: 1.125em;
-  border-left: 1px solid #202020;
-  border-right: 1px solid #202020;
-  border-bottom: 1px solid #202020;
-  border-radius: 6px;
-  background-color: #e0e0ff;
-}
-
-
-.accordion .accordion-panel .accordion-content {
-  display: block;
-  padding: 4px;
-  font-size: 0.75em;
-  border-left: 1px solid #202020;
-  border-right: 1px solid #202020;
-  border-bottom: 1px solid #202020;
-  margin-left: 8px;
-  margin-right: 8px;
-  background-color: #f0f0f0;
-}
-
-
-.accordion .accordion-panel:first-child .accordion-title {
-  border-top: 1px solid #202020;
-  border-radius: 8px;
-}
+window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+window.cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame;

@@ -29,7 +29,7 @@ canvas {
 
 
 #stats {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
 }
@@ -37,7 +37,7 @@ canvas {
 
 .options {
   width: 800px;
-  margin: 16px auto;
+  margin: 16px auto 32px auto;
   padding: 0;
 }
 
@@ -94,11 +94,159 @@ canvas {
 
 .option-name {
   display: inline-block;
-  width: 64px;
+  width: 80px;
+}
+
+
+.option-name-short {
+  display: inline-block;
+  width: 48px;
+}
+
+
+.option-name-long {
+  display: inline-block;
+  width: 120px;
+}
+
+
+.radio-name {
+  display: inline-block;
 }
 
 
 .scalar {
   text-align: center;
   width: 48px;
+}
+
+
+.options .row .key-container {
+  display: inline-block;
+  width: 140px;
+  float: left;
+  text-align: center;
+}
+
+
+.options .row .key-container:after {
+  content: " ";
+  display: block;
+  visibility: hidden;
+  clear: both;
+  font-size: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  line-height: 0;
+  height: 0;
+}
+
+
+.options .row .key-container .key {
+  font-family: Monaco, "Consolas";
+  font-size: 20px;
+  display: inline-block;
+  vertical-align: middle;
+  text-align: center;
+  font-weight: bold;
+  color: #ffffff;
+  background-color: #606080;
+  min-width: 24px;
+  min-height: 24px;
+  border: 2px solid #202020;
+  border-radius: 6px;
+  padding: 2px 4px;
+  margin: 0 2px;
+}
+
+
+.options .row .key-container .key:after {
+  content: " ";
+  display: block;
+  visibility: hidden;
+  clear: both;
+  font-size: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  line-height: 0;
+  height: 0;
+}
+
+
+.options .row .delimiter {
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 8px;
+  float: left;
+}
+
+
+.options .row .delimiter:after {
+  content: " ";
+  display: block;
+  visibility: hidden;
+  clear: both;
+  font-size: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  line-height: 0;
+  height: 0;
+}
+
+
+.options .row .usage {
+  font-size: 16px;
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 8px;
+  float: left;
+}
+
+
+.options .row .usage:after {
+  content: " ";
+  display: block;
+  visibility: hidden;
+  clear: both;
+  font-size: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  line-height: 0;
+  height: 0;
+}
+
+
+.options .row .spacer {
+  min-height: 24px;
+}
+
+
+.options .options-text {
+  font-size: 16px;
+  font-weight: normal;
+}
+
+
+.options-text .left {
+  display: inline-block;
+  width: 150px;
+}
+
+
+button.plus {
+  margin-left: 2px;
+}
+
+
+.h-center {
+  width: 100%;
+  text-align: center;
+}
+
+
+button.reset {
 }
