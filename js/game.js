@@ -227,7 +227,7 @@ tetris.handle_full_rows = function() {
   }
   
   for (i = 0, j = tetris.board.animating.length; i < j; i++)
-    tetris.board.animating[i].animate(1);
+    tetris.board.animating[i].animate(n);
   
   if (tetris.board.animating.length >= 1)
     tetris.halt_for_animation();

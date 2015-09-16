@@ -49,11 +49,20 @@ function Block(block, group, parent) {
   
   this.row = 0;
   this.column = 0;
+  this.visible = false;
   
   this.animation = 0;
   this.frame = 0;
   
-  this.visible = false;
+  this.target_x = 0;
+  this.target_y = 0;
+  this.target_z = 0;
+  this.target_negative = true;
+  this.recalculate = true;
+  this.fall = false;
+  this.speed = 0;
+  this.n = 1;
+  
 }
 
 
@@ -75,14 +84,26 @@ Block.prototype.remove = function() {
   this.block = null;
   this.parent = null;
   this.group = null;
+  
   this.x = null;
   this.y = null;
   this.z = null;
+  
   this.row = null;
   this.column = null;
+  this.visible = null;
+  
   this.animation = null;
   this.frame = null;
-  this.visible = null;
+  
+  this.target_x = null;
+  this.target_y = null;
+  this.target_z = null;
+  this.target_negative = null;
+  this.recalculate = null;
+  this.fall = null;
+  this.speed = null;
+  this.n = null;
 };
 
 
@@ -122,63 +143,199 @@ Block.prototype.get_position = function() {
 };
 
 
-Block.prototype.frame_single = (function() {
-  var scale_delta = 0;
-  
-  return function(reset) {
-    if (reset)
-      scale_delta = 0;
-    
-    if (this.animation != ANIM_SINGLE)
-      return -1;
-    
-    this.block.scale.x = Math.max(0, this.block.scale.x -= 0.02);
-    this.block.scale.y = Math.max(0, this.block.scale.y -= 0.02);
-    this.block.scale.z = Math.max(0, this.block.scale.z -= 0.02);
-    
-    scale_delta += 0.02;
-    
-    if ((scale_delta >= 1) || (this.block.scale.x <= 0) || (this.block.scale.y <= 0) || (this.block.scale.z <= 0)) {
-      this.animation = ANIM_NONE;
-      this.block.scale.set(0, 0, 0);
-      
-      scale_delta = 0;
-      
-      return 1;
-    }
-    
-    return 0;
-  };
-})();
+Block.prototype.frame_single = function(reset) {
+  if (this.animation != ANIM_SINGLE)
+    return -1;
 
+  this.block.scale.x = Math.max(0, this.block.scale.x -= 0.02);
+  this.block.scale.y = Math.max(0, this.block.scale.y -= 0.02);
+  this.block.scale.z = Math.max(0, this.block.scale.z -= 0.02);
 
-Block.prototype.frame_double = function(reset) {
+  if ((this.block.scale.x <= 0) || (this.block.scale.y <= 0) || (this.block.scale.z <= 0)) {
+    this.animation = ANIM_NONE;
+    this.block.scale.set(0, 0, 0);
+
+    return 1;
+  }
+
+  return 0;
 };
 
 
+Block.prototype.frame_double = function(reset) {
+  if (this.animation != ANIM_DOUBLE)
+    return -1;
+  
+  if (this.block.position.x >= this.target_x)
+    this.fall = true;
+  
+  if (!this.fall) {
+    this.block.scale.x -= 0.0005;
+    this.block.scale.y -= 0.0005;
+    this.block.scale.z -= 0.0005;
+    this.block.position.x += Math.min(this.speed, Math.max(this.speed * Math.abs(this.target_x - this.block.position.x), this.speed / 4));
+  } else {
+    this.block.position.x -= Math.min(this.speed * 2, Math.max(this.speed * Math.abs(this.target_x - this.block.position.x), this.speed / 4));
+  }
+
+  if (this.block.position.x < -2) {
+    this.animation = ANIM_NONE;
+
+    return 1;
+  }
+
+  return 0;
+};
+
+
+/* I wasn't real happy with where this was going, but I left it in in case I
+ * wanted to revisit it, or maybe someone else did.
+ */
+/* 
+Block.prototype.frame_double = function(reset) {
+  if (this.animation != ANIM_DOUBLE)
+    return -1;
+  
+  if (this.block.position.y >= this.target_y)
+    this.fall = true;
+  
+  if (this.column <= 4)
+    this.block.position.x -= ((this.speed / 60) + ((5 - this.column) / 100));
+  else
+    this.block.position.x += ((this.speed / 60) + ((this.column - 4) / 100));
+  
+  this.block.position.z += (this.speed / 4);
+
+  if (!this.fall)
+    this.block.position.y += this.speed;
+  else
+    this.block.position.y -= this.speed;
+
+  if (this.block.position.y < -6) {
+    this.animation = ANIM_NONE;
+
+    return 1;
+  }
+
+  return 0;
+};
+*/
+
+
 Block.prototype.frame_turkey = function(reset) {
+    if (reset) {
+      this.target_negative = false;
+      this.recalculate = true;
+      this.fall = false;
+      this.n = 1;
+      this.target_z = -1;
+      this.speed = 0.02;
+    }
+    
+    if (this.animation != ANIM_TURKEY)
+      return -1;
+    
+    if (this.block.position.z >= 1.2)
+      this.fall = true;
+  
+    if ((this.recalculate == true) && (!this.fall)) {
+      this.target_z = (0.1 * this.n) + ((tetris.rng.between(0, 200) - 100) / 100);
+      this.speed = (0.02 * this.n) + (tetris.rng.between(0, 20) / 1000);
+      
+      if (this.target_z >= 0)
+        this.target_negative = false;
+      else
+        this.target_negative = true;
+      
+      this.recalculate = false;
+    }
+    
+    if (!this.fall) {
+      if (this.target_negative) {
+        this.block.position.z -= this.speed;
+
+        if (this.block.position.z <= this.target_z) {
+          this.recalculate = true;
+          this.n++;
+        }
+      } else {
+        this.block.position.z += this.speed;
+        
+        if (this.block.position.z >= this.target_z) {
+          this.recalculate = true;
+          this.n++;
+        }
+      }
+    } else {
+      this.block.position.y -= 0.15;
+      
+      if (this.block.position.y <= -6)
+        return 1;
+    }
+    
+    return 0;
 };
 
 
 Block.prototype.frame_tetris = function(reset) {
+  if (this.animation != ANIM_TETRIS)
+    return -1;
+
+  this.block.scale.x = Math.max(0, this.block.scale.x -= 0.02);
+  this.block.scale.y = Math.max(0, this.block.scale.y -= 0.02);
+  this.block.scale.z = Math.max(0, this.block.scale.z -= 0.02);
+
+  if ((this.block.scale.x <= 0) || (this.block.scale.y <= 0) || (this.block.scale.z <= 0)) {
+    this.animation = ANIM_NONE;
+    this.block.scale.set(0, 0, 0);
+
+    return 1;
+  }
+
+  return 0;
 };
 
 
 Block.prototype.animate = function(id) {
   if (this.animation != ANIM_NONE) /* one animation at a time on a block */
-    return false;
+    return -3;
   
-  if ((id == ANIM_SINGLE) && (!tetris.config.graphics.animations.animation_single))
-    return false;
-  else if ((id == ANIM_DOUBLE) && (!tetris.config.graphics.animations.animation_double))
-    return false;
-  else if ((id == ANIM_TURKEY) && (!tetris.config.graphics.animations.animation_turkey))
-    return false;
-  else if ((id == ANIM_TETRIS) && (!tetris.config.graphics.animations.animation_tetris))
-    return false;
+  if (id == ANIM_SINGLE) {
+    if (!tetris.config.graphics.animations.animation_single)
+      return -2;
+    
+    /* single init */
+  } else if (id == ANIM_DOUBLE) {
+    if (!tetris.config.graphics.animations.animation_double)
+      return -2;
+    
+    this.target_x = this.block.position.x + 1;
+    this.speed = 0.1;
+    this.fall = false;
+    
+  } else if (id == ANIM_TURKEY) {
+    if (!tetris.config.graphics.animations.animation_turkey)
+      return -2;
+    
+    this.target_z = -1;
+    this.target_negative = true;
+    this.recalculate = true;
+    this.fall = false;
+    this.speed = 0.02;
+    this.n = 1;
+   
+  } else if (id == ANIM_TETRIS) {
+    if (!tetris.config.graphics.animations.animation_tetris)
+      return -2;
+    
+  } else {
+    return -3;
+  }
   
   this.animation = ~~id;
   this.frame = 0; /* currently unused */
+  
+  return 0;
 };
 
 
@@ -188,25 +345,25 @@ Block.prototype.step = function() {
   switch (this.animation) {
     case ANIM_SINGLE:
       if (!tetris.config.graphics.animations.animation_single)
-        return false;
+        return -2;
       
       result = this.frame_single();
       break;
     case ANIM_DOUBLE:
       if (!tetris.config.graphics.animations.animation_double)
-        return false;
+        return -2;
       
       result = this.frame_double();
       break;
     case ANIM_TURKEY:
       if (!tetris.config.graphics.animations.animation_turkey)
-        return false;
+        return -2;
       
       result = this.frame_turkey();
       break;
     case ANIM_TETRIS:
       if (!tetris.config.graphics.animations.animation_tetris)
-        return false;
+        return -2;
       
       result = this.frame_tetris();
       break;

@@ -560,7 +560,7 @@ tetris.render = function() {
   
   if (tetris.board.animating.length >= 1) {
     for (i = 0, j = tetris.board.animating.length; i < j; i++)
-      if ((temp = tetris.board.animating[i].step()) == 1)
+      if ((temp = tetris.board.animating[i].step()) != 0)
         indices.push(i);
     
     for (i = indices.length - 1; i >= 0; i--) {
