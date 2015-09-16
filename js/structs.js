@@ -147,9 +147,9 @@ Block.prototype.frame_single = function(reset) {
   if (this.animation != ANIM_SINGLE)
     return -1;
 
-  this.block.scale.x = Math.max(0, this.block.scale.x -= 0.02);
-  this.block.scale.y = Math.max(0, this.block.scale.y -= 0.02);
-  this.block.scale.z = Math.max(0, this.block.scale.z -= 0.02);
+  this.block.scale.x = Math.max(0, this.block.scale.x -= this.speed);
+  this.block.scale.y = Math.max(0, this.block.scale.y -= this.speed);
+  this.block.scale.z = Math.max(0, this.block.scale.z -= this.speed);
 
   if ((this.block.scale.x <= 0) || (this.block.scale.y <= 0) || (this.block.scale.z <= 0)) {
     this.animation = ANIM_NONE;
@@ -170,15 +170,16 @@ Block.prototype.frame_double = function(reset) {
     this.fall = true;
   
   if (!this.fall) {
-    this.block.scale.x -= 0.0005;
-    this.block.scale.y -= 0.0005;
-    this.block.scale.z -= 0.0005;
+    this.block.scale.x -= 0.0006;
+    this.block.scale.y -= 0.0006;
+    this.block.scale.z -= 0.0006;
+    
     this.block.position.x += Math.min(this.speed, Math.max(this.speed * Math.abs(this.target_x - this.block.position.x), this.speed / 4));
   } else {
     this.block.position.x -= Math.min(this.speed * 2, Math.max(this.speed * Math.abs(this.target_x - this.block.position.x), this.speed / 4));
   }
 
-  if (this.block.position.x < -2) {
+  if (this.block.position.x < -1) {
     this.animation = ANIM_NONE;
 
     return 1;
@@ -240,7 +241,7 @@ Block.prototype.frame_turkey = function(reset) {
   
     if ((this.recalculate == true) && (!this.fall)) {
       this.target_z = (0.1 * this.n) + ((tetris.rng.between(0, 200) - 100) / 100);
-      this.speed = (0.02 * this.n) + (tetris.rng.between(0, 20) / 1000);
+      this.speed = (0.04 * this.n) + (tetris.rng.between(0, 20) / 1000);
       
       if (this.target_z >= 0)
         this.target_negative = false;
@@ -303,6 +304,11 @@ Block.prototype.animate = function(id) {
   if (id == ANIM_SINGLE) {
     if (!tetris.config.graphics.animations.animation_single)
       return -2;
+    
+    if (tetris.config.graphics.animations.animation_single_constant)
+      this.speed = 0.02;
+    else
+      this.speed = 0.015 + (tetris.rng.between(0, 4) / 100);
     
     /* single init */
   } else if (id == ANIM_DOUBLE) {
@@ -369,7 +375,7 @@ Block.prototype.step = function() {
       break;
     case ANIM_NONE: /* fall through */
     default:
-      result = 0;
+      result = -4;
       break;
   }
   

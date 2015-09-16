@@ -67,6 +67,7 @@ tetris.config.graphics.animations.animation_single = true;
 tetris.config.graphics.animations.animation_double = true;
 tetris.config.graphics.animations.animation_turkey = true;
 tetris.config.graphics.animations.animation_tetris = true;
+tetris.config.graphics.animations.animation_single_constant = false;
 
 tetris.config.graphics.effects.effects_all = true;
 tetris.config.graphics.effects.effects_sparks = true;
