@@ -42,7 +42,7 @@ tetris.move_up = function() {
 
 
 tetris.move_right = function() {
-  if (tetris.board.current && !tetris.collided && !tetris.halted && !tetris.gameover)
+  if (tetris.board.current && !tetris.collided && !tetris.halted && !tetris.gameover && !tetris.controls.ispressing("left"))
     tetris.board.current.move(RIGHT);
 };
 
@@ -54,7 +54,7 @@ tetris.move_down = function() {
 
 
 tetris.move_left = function() {
-  if (tetris.board.current && !tetris.collided && !tetris.halted && !tetris.gameover)
+  if (tetris.board.current && !tetris.collided && !tetris.halted && !tetris.gameover && !tetris.controls.ispressing("right"))
     tetris.board.current.move(LEFT);
 };
 
@@ -158,7 +158,7 @@ tetris.init_keyboard_binds = function() {
     }, {
       label: "space",
       code: 32,
-      active: true,
+      active: false,
       down: tetris.spawn_tetrimino,
       during: null,
       up: null
@@ -229,7 +229,7 @@ tetris.init_keyboard_binds = function() {
     }, {
       label: "r",
       code: 82,
-      active: true,
+      active: false,
       down: tetris.rotate_world,
       during: null,
       up: null

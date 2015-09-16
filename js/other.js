@@ -60,10 +60,12 @@ tetris.web_ui = function() {
     }, {
       title: "About",
       content: "Empty"
-    }, {
-      title: "Developer Controls",
-      content: "Empty"
     }
+    
+//    , {
+//      title: "Developer Controls",
+//      content: "Empty"
+//    }
   ]);
   
   
@@ -246,13 +248,57 @@ tetris.web_ui = function() {
   $(tetris.web.options.get_content(5)).html(html);
   
   /* about */
-  html = "All about it...";
+  html  = '<div class="options-text">';
+  html += "Gameplay:<br /><br />";
+  html += "Sequencing refers to the way the \"sequence\" of tetriminos are generated. ";
+  html += "Random will use the random number generator and just pull whatever. ";
+  html += "In theory this is supposed to produce a random series with a reasonably equal distribution. ";
+  html += "Sadly this doesn't always happen, so I provide the deck variation. ";
+  html += "The deck method will remind you of playing cards at a casino -- that is, you know exactly what and how many cards are in each deck. ";
+  html += "Deck play here is the same. ";
+  html += "A series of decks are added together and then shuffled to produce a random sequence of tetriminos with a completely equal distribution. ";
+  html += "<br /><br />";
+  html += "Biasing is a way to \"stack the decks\" so to speak in whatever way you like. ";
+  html += "Instead of every tetrimino being added once for every deck, you can make it be added 'n' times. ";
+  html += "Currently biasing hasn't been implemented, but it's a simple addition that will be put in shortly (as you can see, the user interface already exists). ";
+  html += "<br /><br />";
+  html += "Even though biasing isn't in quite yet, deck play does work -- you just can't bias your decks yet.";
+  html += "<br /><br /><br />";
+  html += "Graphics:<br /><br />";
+  html += "Light intensity is just what it sounds like. ";
+  html += "Currently red is used in a feature under development. ";
+  html += "<br /><br />";
+  html += "The line clearing animations and special effects are currently being worked on. ";
+  html += "The only in place animation is the 1-line (single) clearing animation where the blocks simply shrink out of existence. ";
+  html += "On/off for each animation currently isn't checked, and it's simply defaulting to the 1-line. ";
+  html += "I'm currently looking for good animation ideas that wouldn't require a massive investment of time to create. ";
+  html += "Think cheap bling; after all, it's not like I'm getting paid to make the animations super amazing. ";
+  html += "<br /><br /><br />";
+  html += "Audio:<br /><br />";
+  html += "No audio yet.";
+  html += "<br /><br /><br />";
+  html += "Controls:<br /><br />";
+  html += "Hopefully self-explanatory after reading the controls panel. ";
+  html += "I'm reasonably proud of the KeyAssist system I built for helping with game controls though. ";
+  html += "The controls should feel smooth and clean -- like a high quality Rubik's Cube that's brand new, nice and loose and well greased. ";
+  html += "If you have any issues with the controls let me know because KeyAssist is a separate project I'm working on in parallel with this. ";
+  html += "That said, I am however aware of the issue when pressing both left and right simultaneously. ";
+  html += "<br /><br /><br />";
+  html += "Statistics:<br /><br />";
+  html += "This will use my grid plugin and display the player's scores/stats. ";
+  html += "It won't be permanent storage or anything since any idiot with a JavaScript console could wreck it. ";
+  html += "<br /><br /><br />";
+  html += "Other:<br /><br />";
+  html += "Yes I know the scoreboard is crap.  I was finishing up the larger brushstrokes of the gameplay and had to pass out but still needed score indicators. ";
+  html += "It's absolutely going to be changed, or at the very least improved upon. ";
+  html += '</div>';
+  
   
   $(tetris.web.options.get_content(6)).html(html);
   
-  html  = '<button id="rotate_world">Rotate World</button>';
-  html += '<button id="spawn_tetrimino">Spawn Tetrimino</button>';
-  html += '<button id="spawn_preview">Spawn Preview</button>';
-  
-  $(tetris.web.options.get_content(7)).html(html);
+//  html  = '<button id="rotate_world">Rotate World</button>';
+//  html += '<button id="spawn_tetrimino">Spawn Tetrimino</button>';
+//  html += '<button id="spawn_preview">Spawn Preview</button>';
+//  
+//  $(tetris.web.options.get_content(7)).html(html);
 };
