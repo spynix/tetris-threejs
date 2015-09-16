@@ -196,19 +196,19 @@ Block.prototype.step = function() {
       if (!tetris.config.graphics.animations.animation_double)
         return false;
       
-      this.frame_double();
+      result = this.frame_double();
       break;
     case ANIM_TURKEY:
       if (!tetris.config.graphics.animations.animation_turkey)
         return false;
       
-      this.frame_turkey();
+      result = this.frame_turkey();
       break;
     case ANIM_TETRIS:
       if (!tetris.config.graphics.animations.animation_tetris)
         return false;
       
-      this.frame_tetris();
+      result = this.frame_tetris();
       break;
     case ANIM_NONE: /* fall through */
     default:
@@ -448,6 +448,11 @@ Tetrimino.prototype.collide = function(direction) {
 
 Tetrimino.prototype.move = function(direction) {
   var result;
+  
+  if ((direction == LEFT) && tetris.controls.ispressing("right"))
+    return false;
+  else if ((direction == RIGHT) && tetris.controls.ispressing("left"))
+    return false;
   
   if ((result = this.can_move(direction)) != 0) {
     this.collide(direction);
