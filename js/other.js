@@ -135,6 +135,9 @@ tetris.web_ui = function() {
   html +=     '</div>';
   html +=     '<div class="option">';
   html +=       '<div class="option-name">Single:</div><input id="animation_single" type="checkbox" />';
+  html +=       '<div class="option">';
+  html +=         'Uniform shrinkage: <input id="animation_single_constant" type="checkbox" />';
+  html +=       '</div>';
   html +=     '</div>';
   html +=     '<div class="option">';
   html +=       '<div class="option-name">Double:</div><input id="animation_double" type="checkbox" />';
@@ -260,18 +263,18 @@ tetris.web_ui = function() {
   html += "<br /><br />";
   html += "Biasing is a way to \"stack the decks\" so to speak in whatever way you like. ";
   html += "Instead of every tetrimino being added once for every deck, you can make it be added 'n' times. ";
-  html += "Currently biasing hasn't been implemented, but it's a simple addition that will be put in shortly (as you can see, the user interface already exists). ";
-  html += "<br /><br />";
-  html += "Even though biasing isn't in quite yet, deck play does work -- you just can't bias your decks yet.";
   html += "<br /><br /><br />";
   html += "Graphics:<br /><br />";
   html += "Light intensity is just what it sounds like. ";
   html += "Currently red is used in a feature under development. ";
   html += "<br /><br />";
   html += "The line clearing animations and special effects are currently being worked on. ";
-  html += "The only in place animation is the 1-line (single) clearing animation where the blocks simply shrink out of existence. ";
-  html += "On/off for each animation currently isn't checked, and it's simply defaulting to the 1-line. ";
-  html += "I'm currently looking for good animation ideas that wouldn't require a massive investment of time to create. ";
+  html += "<br /><br />";
+  html += "The 1-line is probably here to stay, and even has an added option of uniform or random shrink rate. ";
+  html += "I don't think the 2-line is too bad... but the 3-line animation just isn't what I was looking for. ";
+  html += "I had this cool amazonian aztec jenga jungle maze puzzle feel I wanted to achieve and it sounded great in my head. ";
+  html += "The result failed, so I'm definitely looking for a 3-line animation. Also looking for a good tetris animation. ";
+  html += "The animation ideas shouldn't require a massive investment of time to create though. ";
   html += "Think cheap bling; after all, it's not like I'm getting paid to make the animations super amazing. ";
   html += "<br /><br /><br />";
   html += "Audio:<br /><br />";
@@ -291,6 +294,9 @@ tetris.web_ui = function() {
   html += "Other:<br /><br />";
   html += "Yes I know the scoreboard is crap.  I was finishing up the larger brushstrokes of the gameplay and had to pass out but still needed score indicators. ";
   html += "It's absolutely going to be changed, or at the very least improved upon. ";
+  html += "<br /><br />";
+  html += "Also note that for the input boxes, you have to change the value and hit enter to propagate the new setting. ";
+  html += "I might add an update button or something to make it more intuitive, or perhaps update it immeadiately on change... I haven't decided yet.";
   html += '</div>';
   
   

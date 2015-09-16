@@ -360,7 +360,7 @@ tetris.new_game = function() {
 
 
 tetris.resequence = function() {
-  var i, j, k;
+  var i, j, k, l;
   
   /* reseed the rng with the current time.  this is a lame reseeding solution for the lazy. */
   tetris.rng.init_genrand((typeof Date.now === "function") ? Date.now() : Date().getTime());
@@ -370,7 +370,8 @@ tetris.resequence = function() {
   
   for (i = 0; i < tetris.config.sequencing.deck_size; i++)
     for (j = 0, k = tetriminos.length; j < k; j++)
-      tetris.board.sequence.push(j);
+      for (l = 0; l < tetris.config.sequencing.bias[j]; l++)
+        tetris.board.sequence.push(j);
   
   /* perform a durstenfeld shuffle */
   for (i = tetris.board.sequence.length - 1; i > 0; i--) {

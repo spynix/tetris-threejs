@@ -108,6 +108,27 @@ tetris.init_options_binds = function() {
   $("#animation_double").prop("checked", tetris.config.graphics.animations.animation_double);
   $("#animation_turkey").prop("checked", tetris.config.graphics.animations.animation_turkey);
   $("#animation_tetris").prop("checked", tetris.config.graphics.animations.animation_tetris);
+  $("#animation_single_constant").prop("checked", tetris.config.graphics.animations.animation_single_constant);
+  
+  $("#animation_single").on("change", function() {
+    tetris.config.graphics.animations.animation_single = this.checked;
+  });
+  
+  $("#animation_double").on("change", function () {
+    tetris.config.graphics.animations.animation_double = this.checked;
+  });
+  
+  $("#animation_turkey").on("change", function () {
+    tetris.config.graphics.animations.animation_turkey = this.checked;
+  });
+  
+  $("#animation_tetris").on("change", function () {
+    tetris.config.graphics.animations.animation_tetris = this.checked;
+  });
+  
+  $("#animation_single_constant").on("change", function() {
+    tetris.config.graphics.animations.animation_single_constant = this.checked;
+  });
   
   $("#effects_all").prop("checked", tetris.config.graphics.effects.effects_all);
   $("#effects_sparks").prop("checked", tetris.config.graphics.effects.effects_sparks);
@@ -143,6 +164,56 @@ tetris.init_options_binds = function() {
   $("#bias_s").prop("disabled", true);
   $("#bias_t").prop("disabled", true);
   $("#bias_z").prop("disabled", true);
+  
+  $("#bias_i_add").on("click", function() {
+    tetris.config.sequencing.bias[0]++;
+    $("#bias_i").val(tetris.config.sequencing.bias[0]);
+  });
+  
+  $("#bias_j_add").on("click", function() {
+    tetris.config.sequencing.bias[1]++;
+    $("#bias_j").val(tetris.config.sequencing.bias[1]);
+  });
+  
+  $("#bias_l_add").on("click", function() {
+    tetris.config.sequencing.bias[2]++;
+    $("#bias_l").val(tetris.config.sequencing.bias[2]);
+  });
+  
+  $("#bias_o_add").on("click", function() {
+    tetris.config.sequencing.bias[3]++;
+    $("#bias_o").val(tetris.config.sequencing.bias[3]);
+  });
+  
+  $("#bias_s_add").on("click", function() {
+    tetris.config.sequencing.bias[4]++;
+    $("#bias_s").val(tetris.config.sequencing.bias[4]);
+  });
+  
+  $("#bias_t_add").on("click", function() {
+    tetris.config.sequencing.bias[5]++;
+    $("#bias_t").val(tetris.config.sequencing.bias[5]);
+  });
+  
+  $("#bias_z_add").on("click", function() {
+    tetris.config.sequencing.bias[6]++;
+    $("#bias_z").val(tetris.config.sequencing.bias[6]);
+  });
+  
+  $("#bias_reset").on("click", function() {
+    var i, j;
+    
+    for (i = 0, j = tetris.config.sequencing.bias.length; i < j; i++)
+      tetris.config.sequencing.bias[i] = 1;
+    
+    $("#bias_i").val(tetris.config.sequencing.bias[0]);
+    $("#bias_j").val(tetris.config.sequencing.bias[1]);
+    $("#bias_l").val(tetris.config.sequencing.bias[2]);
+    $("#bias_o").val(tetris.config.sequencing.bias[3]);
+    $("#bias_s").val(tetris.config.sequencing.bias[4]);
+    $("#bias_t").val(tetris.config.sequencing.bias[5]);
+    $("#bias_z").val(tetris.config.sequencing.bias[6]);
+  });
 };
 
 
