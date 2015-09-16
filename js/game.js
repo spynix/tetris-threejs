@@ -130,9 +130,7 @@ tetris.check_gameover = function() {
   }
   
   against.update(chunk);
-  console.log(against.toString());
   against.add(mm);
-  console.log(against.toString());
   
   for (i = 0; i < against.num_rows; i++) {
     for (j = 0; j < against.num_columns; j++) {
