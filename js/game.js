@@ -51,6 +51,7 @@ tetris.init = function() {
   
   tetris.build_world();
   tetris.build_board();
+  tetris.build_scoreboard();
   tetris.build_pause();
   tetris.build_gameover();
   tetris.graphics.raf = tetris.render();

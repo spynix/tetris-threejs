@@ -34,7 +34,7 @@
 var tetris = tetris || {};
 
 
-tetris.graphics.total_assets = 3;
+tetris.graphics.total_assets = 5;
 
 
 tetris.load_graphics = function() {
@@ -60,6 +60,26 @@ tetris.load_graphics = function() {
   tetris.json_loader.load("./res/graphics/red_block_phong_1.js", function(geometry, materials) {
     tetris.graphics.redblock = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
     tetris.graphics.redblock.material.materials[6].shininess = 4;
+    
+    tetris.graphics.assets_loaded++;
+
+    if (tetris.graphics.assets_loaded == tetris.graphics.total_assets)
+      tetris.graphics_loaded();
+  });
+  
+  tetris.json_loader.load("./res/graphics/scoreboard_board_1.js", function(geometry, materials) {
+    tetris.graphics.scoreboard_board = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
+    
+    tetris.graphics.assets_loaded++;
+
+    if (tetris.graphics.assets_loaded == tetris.graphics.total_assets)
+      tetris.graphics_loaded();
+  });
+  
+  tetris.json_loader.load("./res/graphics/scoreboard_screw_phong_1.js", function(geometry, materials) {
+    tetris.graphics.scoreboard_screw = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
+    tetris.graphics.scoreboard_screw.material.materials[2].shininess = 2;
+    tetris.graphics.scoreboard_screw.material.materials[2].metal = true;
     
     tetris.graphics.assets_loaded++;
 
@@ -258,6 +278,39 @@ tetris.build_board = function() {
   tetris.board.scene.add(tetris.board.light);
 //  tetris.board.scene.add(tetris.board.light2);
   tetris.board.scene.add(tetris.board.group);
+};
+
+
+tetris.build_scoreboard = function() {
+  tetris.scoreboard.group = new THREE.Group();
+  tetris.scoreboard.board = tetris.graphics.scoreboard_board.clone();
+  tetris.scoreboard.screw1 = tetris.graphics.scoreboard_screw.clone();
+  tetris.scoreboard.screw2 = tetris.graphics.scoreboard_screw.clone();
+  tetris.scoreboard.screw3 = tetris.graphics.scoreboard_screw.clone();
+  tetris.scoreboard.screw4 = tetris.graphics.scoreboard_screw.clone();
+
+  tetris.scoreboard.board.rotation.z = Math.PI;
+  tetris.scoreboard.board.position.set(22.66, -3.25, 1);
+//  tetris.scoreboard.board.position.set(13.625, 15.25, 1);
+
+  tetris.scoreboard.screw1.scale.set(.3, .3, .3);
+  tetris.scoreboard.screw2.scale.set(.3, .3, .3);
+  tetris.scoreboard.screw3.scale.set(.3, .3, .3);
+  tetris.scoreboard.screw4.scale.set(.3, .3, .3);
+  
+  tetris.scoreboard.screw1.position.set(19.25,  -1,   1.2);
+  tetris.scoreboard.screw2.position.set(25.875, -1,   1.2);
+  tetris.scoreboard.screw3.position.set(19.25,  -5.5, 1.2);
+  tetris.scoreboard.screw4.position.set(25.875, -5.5, 1.2);
+
+  tetris.scoreboard.group.add(tetris.scoreboard.board);
+  tetris.scoreboard.group.add(tetris.scoreboard.screw1);
+  tetris.scoreboard.group.add(tetris.scoreboard.screw2);
+  tetris.scoreboard.group.add(tetris.scoreboard.screw3);
+  tetris.scoreboard.group.add(tetris.scoreboard.screw4);
+
+  tetris.world.group.add(tetris.scoreboard.group);
+//  tetris.board.group.add(tetris.scoreboard.group);
 };
 
 

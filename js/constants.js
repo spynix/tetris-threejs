@@ -48,6 +48,7 @@ tetris.graphics = tetris.graphics || {};
 tetris.sounds = tetris.sounds || {};
 tetris.world = tetris.world || {};
 tetris.board = tetris.board || {};
+tetris.scoreboard = tetris.scoreboard || {};
 tetris.pause = tetris.pause || {};
 tetris.game_over = tetris.game_over || {};
 
@@ -268,10 +269,6 @@ var ANIM_SINGLE = 1;
 var ANIM_DOUBLE = 2;
 var ANIM_TURKEY = 3;
 var ANIM_TETRIS = 4;
-
-
-var GRAVITY = 0.005;
-
 
 var UP     = 0;
 var RIGHT  = 1;
