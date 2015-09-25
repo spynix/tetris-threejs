@@ -611,7 +611,7 @@ tetris.render = function() {
 //  tetris.world.trackball.update();
   tetris.stats.update();
   
-  if (tetris.board.animating.length >= 1) {
+  if (!tetris.paused && (tetris.board.animating.length >= 1)) {
     for (i = 0, j = tetris.board.animating.length; i < j; i++)
       if ((temp = tetris.board.animating[i].step()) != 0)
         indices.push(i);
