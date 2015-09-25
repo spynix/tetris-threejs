@@ -58,12 +58,18 @@ function Block(block, group, parent) {
   this.target_x = 0;
   this.target_y = 0;
   this.target_z = 0;
+  
+  this.speed_x = 0;
+  this.speed_y = 0;
+  this.speed_z = 0;
+  
   this.target_negative = true;
   this.recalculate = true;
   this.fall = false;
   this.speed = 0;
   this.n = 1;
-  
+  this.exploding = false;
+  this.positioned = false;
 }
 
 
@@ -101,11 +107,18 @@ Block.prototype.remove = function() {
   this.target_x = null;
   this.target_y = null;
   this.target_z = null;
+  
+  this.speed_x = null;
+  this.speed_y = null;
+  this.speed_z = null;
+  
   this.target_negative = null;
   this.recalculate = null;
   this.fall = null;
   this.speed = null;
   this.n = null;
+  this.exploding = null;
+  this.positioned = null;
 };
 
 
@@ -146,6 +159,15 @@ Block.prototype.get_position = function() {
 
 
 Block.prototype.frame_single = function(reset) {
+  if (reset) {
+    if (tetris.config.graphics.animations.animation_single_constant)
+      this.speed = 0.02;
+    else
+      this.speed = 0.015 + (tetris.rng.between(0, 4) / 100);
+    
+    return 4;
+  }
+  
   if (this.animation != ANIM_SINGLE)
     return -1;
 
@@ -165,6 +187,14 @@ Block.prototype.frame_single = function(reset) {
 
 
 Block.prototype.frame_double = function(reset) {
+  if (reset) {
+    this.target_x = this.block.position.x + 1;
+    this.speed = 0.1;
+    this.fall = false;
+    
+    return 4;
+  }
+  
   if (this.animation != ANIM_DOUBLE)
     return -1;
   
@@ -226,10 +256,53 @@ Block.prototype.frame_double = function(reset) {
 
 
 Block.prototype.frame_turkey = function(reset) {
+  if (reset) {
+    this.fall = false;
+    this.speed = 0.02 + (tetris.rng.between(0, 4) / 100);
+    this.n = 1;
+    this.frame = 1;
+    this.wait = tetris.rng.between(0, 90);
+    
+    return 4;
+  }
+
+  if (this.animation != ANIM_TURKEY)
+    return -1;
+
+  if (this.block.position.z >= 1.2)
+    this.fall = true;
+
+  if (!this.fall) {
+    this.block.position.z += this.speed;
+  } else {
+      if (this.n < this.wait) {
+        this.n++;
+        return 0;
+      }
+    
+    this.block.position.y -= 0.015 * this.frame;
+
+    if (this.block.position.y <= -6)
+      return 1;
+
+    this.frame++;
+  }
+
+  return 0;
+};
+
+
+/* I wasn't real happy with where this was going, but I left it in in case I
+ * wanted to revisit it, or maybe someone else did.
+ */
+/*
+Block.prototype.frame_turkey = function(reset) {
     if (reset) {
+      this.target_negative = false;
+      this.recalculate = true;
       this.fall = false;
-      this.wait = 100;
       this.n = 1;
+      this.target_z = -1;
       this.speed = 0.02;
     }
     
@@ -238,100 +311,142 @@ Block.prototype.frame_turkey = function(reset) {
     
     if (this.block.position.z >= 1.2)
       this.fall = true;
-    
-    if (this.n < this.wait) {
-      this.n++;
-      return 0;
+  
+    if ((this.recalculate == true) && (!this.fall)) {
+      this.target_z = (0.1 * this.n) + ((tetris.rng.between(0, 200) - 100) / 100);
+      this.speed = (0.04 * this.n) + (tetris.rng.between(0, 20) / 1000);
+      
+      if (this.target_z >= 0)
+        this.target_negative = false;
+      else
+        this.target_negative = true;
+      
+      this.recalculate = false;
     }
     
-    
     if (!this.fall) {
-      this.block.position.z += this.speed;
-    } else {
-      this.block.position.y -= 0.015 * this.frame;
+      if (this.target_negative) {
+        this.block.position.z -= this.speed;
 
+        if (this.block.position.z <= this.target_z) {
+          this.recalculate = true;
+          this.n++;
+        }
+      } else {
+        this.block.position.z += this.speed;
+        
+        if (this.block.position.z >= this.target_z) {
+          this.recalculate = true;
+          this.n++;
+        }
+      }
+    } else {
+      this.block.position.y -= 0.15;
+      
       if (this.block.position.y <= -6)
         return 1;
-      
-      this.frame++;
     }
     
     return 0;
 };
+*/
 
 
-//Block.prototype.frame_turkey = function(reset) {
-//    if (reset) {
-//      this.target_negative = false;
-//      this.recalculate = true;
-//      this.fall = false;
-//      this.n = 1;
-//      this.target_z = -1;
-//      this.speed = 0.02;
-//    }
-//    
-//    if (this.animation != ANIM_TURKEY)
-//      return -1;
-//    
-//    if (this.block.position.z >= 1.2)
-//      this.fall = true;
-//  
-//    if ((this.recalculate == true) && (!this.fall)) {
-//      this.target_z = (0.1 * this.n) + ((tetris.rng.between(0, 200) - 100) / 100);
-//      this.speed = (0.04 * this.n) + (tetris.rng.between(0, 20) / 1000);
-//      
-//      if (this.target_z >= 0)
-//        this.target_negative = false;
-//      else
-//        this.target_negative = true;
-//      
-//      this.recalculate = false;
-//    }
-//    
-//    if (!this.fall) {
-//      if (this.target_negative) {
-//        this.block.position.z -= this.speed;
+Block.prototype.frame_tetris = (function() {
+  var num_positioned = 0;
+  
+  return function(reset) {
+    if (reset) {
+      num_positioned = 0;
+      
+      this.exploding = false;
+      this.positioned = false;
+      this.wait = 45;
+      this.n = 1;
+
+      this.speed = 0.1 + (tetris.rng.between(0, 3) / 10);
+
+//      if (this.block.position.x >= 4.5)
+//        this.speed_x = (this.block.position.x) / 45;
+//      else if (this.block.position.x < 4.5)
+//        this.speed_x = (4.5 - this.block.position.x) / 45;
 //
-//        if (this.block.position.z <= this.target_z) {
-//          this.recalculate = true;
-//          this.n++;
-//        }
-//      } else {
-//        this.block.position.z += this.speed;
-//        
-//        if (this.block.position.z >= this.target_z) {
-//          this.recalculate = true;
-//          this.n++;
-//        }
-//      }
-//    } else {
-//      this.block.position.y -= 0.15;
-//      
-//      if (this.block.position.y <= -6)
-//        return 1;
-//    }
-//    
-//    return 0;
-//};
+//
+//      if (this.block.position.y > 10)
+//        this.speed_y = (this.block.position.y - 10) / 45;
+//      else if (this.block.position.y < 10)
+//        this.speed_y = (10 - this.block.position.y) / 45;
+      this.speed_x = (4.5 - this.block.position.x) / 45;
+      this.speed_y = (10 - this.block.position.y) / 45;
+      this.speed_z = (1.5 - this.block.position.z) / 45;
+      
+      return 4;
+    }
+    
+    if (this.animation != ANIM_TETRIS)
+      return -1;
 
+    if (!this.positioned && !this.exploding) {
+      if ((this.block.position.x >= (4.5 - Math.abs(this.speed_x))) && (this.block.position.x <= (4.5 + Math.abs(this.speed_x))))
+        this.block.position.x = 4.5;
+      
+      if ((this.block.position.y >= (10 - Math.abs(this.speed_y))) && (this.block.position.y <= (10 + Math.abs(this.speed_y))))
+        this.block.position.y = 10;
+      
+      if ((this.block.position.z >= (1.5 - Math.abs(this.speed_x))) && (this.block.position.z <= (1.5 + Math.abs(this.speed_x))))
+        this.block.position.z = 1.5;
+      
+      if ((this.block.position.x == 4.5) && (this.block.position.y == 10) && (this.block.position.z == 1.5)) {
+        this.positioned = true;
+        num_positioned++;
+      }
+      
+      if (!this.positioned) {
+        if (this.block.position.x != 4.5)
+          this.block.position.x += this.speed_x;
 
-Block.prototype.frame_tetris = function(reset) {
-  if (this.animation != ANIM_TETRIS)
-    return -1;
+        if (this.block.position.y != 10)
+          this.block.position.y += this.speed_y;
 
-  this.block.scale.x = Math.max(0, this.block.scale.x -= 0.02);
-  this.block.scale.y = Math.max(0, this.block.scale.y -= 0.02);
-  this.block.scale.z = Math.max(0, this.block.scale.z -= 0.02);
+        if (this.block.position.z != 1.5)
+          this.block.position.z += this.speed_z;
+      }
+    } else if (num_positioned < 40) {
+      return 0;
+    } else if (this.positioned && (this.n < this.wait)) {
+      this.n++;
+    } else if (this.positioned && !this.exploding) {
+      this.exploding = true;
+      this.target_x = 25 * Math.cos(tetris.rng.between(0, 180));
+      this.target_y = 25 * Math.cos(tetris.rng.between(0, 180));
+      this.target_z = 25 * Math.cos(tetris.rng.between(0, 180));
+      
+      this.speed_x = this.target_x / 90;
+      this.speed_y = this.target_y / 90;
+      this.speed_z = this.target_z / 90;
+      
+      this.n = 0;
+      this.wait = -1;
+    } else if (this.positioned && this.exploding) {
+      if ((this.n > 120) ||
+         ((Math.abs(this.block.position.x) >= 25) ||
+          (Math.abs(this.block.position.y) >= 25) ||
+          (Math.abs(this.block.position.z) >= 25))) {
+        this.animation = ANIM_NONE;
 
-  if ((this.block.scale.x <= 0) || (this.block.scale.y <= 0) || (this.block.scale.z <= 0)) {
-    this.animation = ANIM_NONE;
-    this.block.scale.set(0, 0, 0);
+        return 1;
+      }
+      
+      this.block.position.x += this.speed_x;
+      this.block.position.y += this.speed_y;
+      this.block.position.z += this.speed_z;
+      
+      this.n++;
+    }
 
-    return 1;
-  }
-
-  return 0;
-};
+    return 0;
+  };
+})();
 
 
 Block.prototype.animate = function(id) {
@@ -342,34 +457,22 @@ Block.prototype.animate = function(id) {
     if (!tetris.config.graphics.animations.animation_single)
       return -2;
     
-    if (tetris.config.graphics.animations.animation_single_constant)
-      this.speed = 0.02;
-    else
-      this.speed = 0.015 + (tetris.rng.between(0, 4) / 100);
-    
-    /* single init */
+    this.frame_single(true);
   } else if (id == ANIM_DOUBLE) {
     if (!tetris.config.graphics.animations.animation_double)
       return -2;
     
-    this.target_x = this.block.position.x + 1;
-    this.speed = 0.1;
-    this.fall = false;
-    
+    this.frame_double(true);
   } else if (id == ANIM_TURKEY) {
     if (!tetris.config.graphics.animations.animation_turkey)
       return -2;
     
-    this.fall = false;
-    this.speed = 0.02 + (tetris.rng.between(0, 4) / 100);
-    this.n = 1;
-    this.frame = 1;
-    this.wait = tetris.rng.between(0, 90);
-   
+    this.frame_turkey(true);
   } else if (id == ANIM_TETRIS) {
     if (!tetris.config.graphics.animations.animation_tetris)
       return -2;
     
+    this.frame_tetris(true);
   } else {
     return -3;
   }
