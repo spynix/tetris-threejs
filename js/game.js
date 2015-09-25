@@ -316,10 +316,19 @@ tetris.reset_game = function() {
     tetris.world.group.remove(tetris.game_over.group);
   }
   
+  if (tetris.halted) {
+    tetris.halted = false;
+  }
+  
   for (i = 0, l = tetris.board.blocks.length; i < l; i++)
     tetris.board.blocks[i].remove();
   
   tetris.board.blocks = [];
+  
+  for (i = 0, l = tetris.board.animating.length; i < l; i++)
+    tetris.board.animating[i].remove();
+  
+  tetris.board.animating = [];
   
   tetris.board.matrix.update(empty_board);
 };
